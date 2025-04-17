@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign-Up Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Chetan's Sign Up Form</h2>
+        <form id="signupForm">
+            <label for="username">Username:</label>
+            <input placeholder="Your username" type="text" id="username" name="username" required>
+            <span class="error" id="usernameError"></span>
+
+            <label for="email">Email:</label>
+            <input placeholder="Your email" type="email" id="email" name="email" required>
+            <span class="error" id="emailError"></span>
+
+            <label for="password">Password:</label>
+            <input placeholder="Your secret password" type="password" id="password" name="password" required>
+            <span class="error" id="passwordError"></span>
+
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
