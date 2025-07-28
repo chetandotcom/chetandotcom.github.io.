@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M-Audio Oxygen Pro 49</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Music Gear Logo">
+    </a>
+    <nav>
+      <a href="index.html#home">Home</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="index.html#cart">Cart (<span id="cart-count">0</span>)</a>
+    </nav>
+  </header>
+
+<section class="product-detail">
+  <div class="product-grid1">
+    <video autoplay muted loop id="product-bg" style="filter: blur(5px); position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
+      <source src="images/Keyboard/bg.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <img src="images/Keyboard/keyboard.png" alt="M-Audio Oxygen Pro 49" class="product-image" />
+    <div class="product-info">
+      <h1>M-Audio Oxygen Pro 49</h1>
+      <p>The Oxygen Pro 49 is a powerful, 49-key USB powered MIDI controller that allows you to create the music you want to make even easier! It doesn’t matter if you want to create music on the go or in the studio, the M-Audio Oxygen Pro series is perfectly flexible for your workflow.</p>
+      <p><strong>Price:</strong> ₹20,999</p>
+      <button class="add-to-cart-btn" onclick="addToCart('M-Audio Oxygen Pro 49')">Add to Cart</button>
+
+    </div>
+  </div>
+</section>
+<section class="product-gallery">
+  <h2>Product Images</h2>
+  <div class="gallery-grid">
+    <img src="images/Keyboard/keyboard1.jpg" alt="M-Audio Oxygen Pro 49" />
+    <img src="images/Keyboard/keyboard2.jpg" alt="M-Audio Oxygen Pro 49" />
+    <img src="images/Keyboard/keyboard3.jpg" alt="M-Audio Oxygen Pro 49" />
+    <img src="images/Keyboard/keyboard4.jpg" alt="M-Audio Oxygen Pro 49" />
+    <img src="images/Keyboard/keyboard5.jpg" alt="M-Audio Oxygen Pro 49" />
+    <img src="images/Keyboard/keyboard6.jpg" alt="M-Audio Oxygen Pro 49" />
+
+  </div>
+</section>
+
+<section id="cart" class="cart">
+  <h2>Your Cart</h2>
+  <p>No items yet.</p>
+</section>
+<footer>
+  <p>&copy; SoundWave. Made with ❤️ by Chetu</p>
+</footer>
+
+</body>
+</html>
+<script src="script.js"></script>

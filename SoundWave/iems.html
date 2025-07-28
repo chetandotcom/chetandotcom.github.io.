@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sennheiser IE 900 Monitors</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Music Gear Logo">
+    </a>
+    <nav>
+      <a href="index.html#home">Home</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="index.html#cart">Cart (<span id="cart-count">0</span>)</a>
+    </nav>
+  </header>
+
+<section class="product-detail">
+  <div class="product-grid1">
+    <video autoplay muted loop id="product-bg" style="filter: blur(1px); position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
+      <source src="images/IEMs/bg.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <img src="images/IEMs/iems.png" alt="Sennheiser IE 900 Monitors" class="product-image" />
+    <div class="product-info">
+      <h1>Sennheiser IE 900 Monitors</h1>
+      <p>The precision-manufactured aluminum housing of the IE 900 faithfully protects the dynamic TrueResponse transducers at the heart of Sennheiser’s innovative X3R technology. The IE 900 reveals the true potential of any recording. If it’s a masterpiece, you’ll hear it. Brilliant, sparkling treble — with no trace of sibilance.</p>
+      <p><strong>Price:</strong> ₹86,999</p>
+      <button class="add-to-cart-btn" onclick="addToCart('Sennheiser IE 900 Monitors')">Add to Cart</button>
+
+    </div>
+  </div>
+</section>
+<section class="product-gallery">
+  <h2>Product Images</h2>
+  <div class="gallery-grid">
+    <img src="images/IEMs/iem1.jpg" alt="Sennheiser IE 900 Monitors Side View" />
+    <img src="images/IEMs/iem2.jpg" alt="Sennheiser IE 900 Monitors Folded" />
+    <img src="images/IEMs/iem3.jpg" alt="Sennheiser IE 900 Monitors On Model" />
+  </div>
+</section>
+
+<section id="cart" class="cart">
+  <h2>Your Cart</h2>
+  <p>No items yet.</p>
+</section>
+<footer>
+  <p>&copy; SoundWave. Made with ❤️ by Chetu</p>
+</footer>
+
+</body>
+</html>
+<script src="script.js"></script>

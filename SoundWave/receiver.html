@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DENON AV Receiver A1H</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Music Gear Logo">
+    </a>
+    <nav>
+      <a href="index.html#home">Home</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="index.html#cart">Cart (<span id="cart-count">0</span>)</a>
+    </nav>
+  </header>
+
+<section class="product-detail">
+  <div class="product-grid1">
+    <video autoplay muted loop id="product-bg" style="filter: blur(15px); position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
+      <source src="images/AV Receiver/bg.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <img src="images/AV Receiver/denon.png" alt="DENON AV Receiver A1H" class="product-image" />
+    <div class="product-info">
+      <h1>DENON AV Receiver A1H</h1>
+      <p>With 15 channels of amplification, our most powerful transformer, carefully selected parts, and hefty, high-rigidity construction, the AVR-A1H supports up to 9.4.6 configuration and delivers a professional theater experience in your home cinema. Designed and manufactured at Denon facilities in Japan.</p>
+      <p><strong>Price:</strong> ₹22,999</p>
+      <button class="add-to-cart-btn" onclick="addToCart('DENON AV Receiver A1H')">Add to Cart</button>
+
+    </div>
+  </div>
+</section>
+<section class="product-gallery">
+  <h2>Product Images</h2>
+  <div class="gallery-grid">
+    <img src="images/AV Receiver/receiver1.jpg" alt="DENON AV Receiver A1H Side View" />
+    <img src="images/AV Receiver/receiver2.jpg" alt="DENON AV Receiver A1H Folded" />
+    <img src="images/AV Receiver/receiver3.jpg" alt="DENON AV Receiver A1H On Model" />
+    <img src="images/AV Receiver/receiver4.jpg" alt="DENON AV Receiver A1H Side View" />
+    <img src="images/AV Receiver/receiver5.jpg" alt="DENON AV Receiver A1H Side View" />
+    <img src="images/AV Receiver/receiver6.jpg" alt="DENON AV Receiver A1H Side View" />
+  </div>
+</section>
+
+<section id="cart" class="cart">
+  <h2>Your Cart</h2>
+  <p>No items yet.</p>
+</section>
+<footer>
+  <p>&copy; SoundWave. Made with ❤️ by Chetu</p>
+</footer>
+
+</body>
+</html>
+<script src="script.js"></script>

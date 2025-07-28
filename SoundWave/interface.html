@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scarlett Focusrite 2i2 4th gen</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Music Gear Logo">
+    </a>
+    <nav>
+      <a href="index.html#home">Home</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="index.html#cart">Cart (<span id="cart-count">0</span>)</a>
+    </nav>
+  </header>
+
+<section class="product-detail">
+  <div class="product-grid1">
+    <video autoplay muted loop id="product-bg" style="filter: blur(15px); position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
+      <source src="images/Audio Interface/bg.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <img src="images/Audio Interface/audiointerface.png" alt="Scarlett Focusrite 2i2 4th gen" class="product-image" />
+    <div class="product-info">
+      <h1>Scarlett Focusrite 2i2 4th gen</h1>
+      <p>The original studio-quality 2-in, 2-out interface, has been remastered for the artist. Two of our most detailed ultra-low-noise mic pres. Hi-Z and super-high-quality line inputs for guitars, keys and synths. Studio-grade converters, with a huge 120dB dynamic range that matches what you'd find in a pro studio.</p>
+      <p><strong>Price:</strong> ₹22,999</p>
+      <button class="add-to-cart-btn" onclick="addToCart('Scarlett Focusrite 2i2 4th gen')">Add to Cart</button>
+
+    </div>
+  </div>
+</section>
+<section class="product-gallery">
+  <h2>Product Images</h2>
+  <div class="gallery-grid">
+    <img src="images/Audio Interface/interface1.jpg" alt="Scarlett Focusrite 2i2 4th gen Side View" />
+    <img src="images/Audio Interface/interface2.jpg" alt="Scarlett Focusrite 2i2 4th gen Folded" />
+    <img src="images/Audio Interface/interface3.jpg" alt="Scarlett Focusrite 2i2 4th gen On Model" />
+  </div>
+</section>
+
+<section id="cart" class="cart">
+  <h2>Your Cart</h2>
+  <p>No items yet.</p>
+</section>
+<footer>
+  <p>&copy; SoundWave. Made with ❤️ by Chetu</p>
+</footer>
+
+</body>
+</html>
+<script src="script.js"></script>
