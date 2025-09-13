@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive Book Reader</title>
+    <style>
+        #textDisplay span {
+            padding: 2px;
+            transition: background-color 0.25s ease-in-out;
+            white-space: pre-wrap;
+        }
+        .highlight {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload PDF to Listen & Highlight</h1>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Read Book</button>
+    <br><br>
+<div id="textDisplay" 
+     style="width:600px; border:1px solid #ccc; padding:10px; line-height:1.6; font-size:20px;">
+</div>
+    <audio id="audio" controls></audio>
+
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            if (fileInput.files.length === 0) return alert("Choose a file!");
+            
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            
+            const response = await fetch("/upload", { method: "POST", body: formData });
+            if (!response.ok) {
+                const txt = await response.text();
+                return alert("Failed to generate audio: " + txt);
+            }
+
+            const data = await response.json();
+            const text = data.text;
+            const audioSrc = "static/audio/" + data.audio;
+            const timings = data.timings;
+
+            // Display text with spans
+            const textDisplay = document.getElementById("textDisplay");
+            textDisplay.innerHTML = timings
+                .map((w, idx) => `<span id="w${idx}">${w.word}</span>`)
+                .join(" ");
+
+            const audio = document.getElementById("audio");
+            audio.src = audioSrc;
+
+            let currentIndex = -1;
+            const EPS = 0.06; // small tolerance in seconds to avoid float misses
+
+            function findIndexForTime(t) {
+                // returns index or -1
+                for (let i = 0; i < timings.length; i++) {
+                    const s = timings[i].start - EPS;
+                    const e = timings[i].end + EPS;
+                    if (t >= s && t <= e) return i;
+                }
+                return -1;
+            }
+
+            function updateHighlight() {
+                const currentTime = audio.currentTime;
+                const idx = findIndexForTime(currentTime);
+
+                if (idx !== currentIndex) {
+                    // remove old highlight
+                    if (currentIndex >= 0) {
+                        const old = document.getElementById("w" + currentIndex);
+                        if (old) old.classList.remove("highlight");
+                    }
+                    // set new highlight
+                    if (idx >= 0) {
+                        const el = document.getElementById("w" + idx);
+                        if (el) {
+                            el.classList.add("highlight");
+                            el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+                        }
+                    }
+                    currentIndex = idx;
+                }
+
+                // continue loop while playing
+                if (!audio.paused && !audio.ended) {
+                    requestAnimationFrame(updateHighlight);
+                }
+            }
+
+            audio.addEventListener("play", () => {
+                requestAnimationFrame(updateHighlight);
+            });
+
+            // if audio ends, ensure final word is highlighted (or cleared if no words)
+            audio.addEventListener("ended", () => {
+                if (timings.length > 0) {
+                    // highlight the last word (guaranteed by backend to have end == audio.duration)
+                    const lastIdx = timings.length - 1;
+                    if (currentIndex !== lastIdx) {
+                        if (currentIndex >= 0) {
+                            const old = document.getElementById("w" + currentIndex);
+                            if (old) old.classList.remove("highlight");
+                        }
+                        const el = document.getElementById("w" + lastIdx);
+                        if (el) el.classList.add("highlight");
+                        el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+                        currentIndex = lastIdx;
+                    }
+                }
+            });
+
+            // start playback
+            audio.play().catch(e => {
+                // autoplay restrictions could block play(); user can press play
+                console.log("audio.play() blocked:", e);
+            });
+        }
+    </script>
+</body>
+</html>
