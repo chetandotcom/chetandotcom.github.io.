@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mini Internet Simulator — Pimped</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07070a;--card:#0f1113;--accent:#1ce783;--glass:rgba(255,255,255,0.03);
+    --neon:0 0 12px rgba(28,231,131,0.16), 0 0 30px rgba(28,231,131,0.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:#1a1a1d;font-family:Inter,system-ui,Arial;color:#e9f2ef}
+  .app{display:grid;grid-template-columns:320px 1fr;gap:20px;padding:28px;align-items:start}
+  header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between}
+  h1{font-size:1.2rem;color:var(--accent);margin:0;font-weight:800;letter-spacing:0.6px}
+  .sub{color:#9aa; font-size:0.86rem}
+
+  /* SIDEBAR */
+  .sidebar{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);backdrop-filter:blur(6px);box-shadow:var(--neon)}
+  .sidebar h2{margin:0 0 8px 0;color:#dfffe6}
+  .explain{font-size:0.88rem;line-height:1.45;color:#bcd;max-height:56vh;overflow:auto;padding-right:6px}
+  .toggleRow{display:flex;gap:10px;align-items:center;margin-top:12px}
+  .toggle{display:flex;align-items:center;background:var(--glass);padding:6px;border-radius:12px}
+  .switch{width:46px;height:24px;background:#0a0a0a;border-radius:999px;padding:3px;display:flex;align-items:center;cursor:pointer}
+  .thumb{width:18px;height:18px;background:var(--accent);border-radius:50%;box-shadow:0 6px 18px rgba(28,231,131,0.12);transform:translateX(0);transition:transform .28s}
+  .switch.off .thumb{transform:translateX(0)}
+  .switch.on .thumb{transform:translateX(22px)}
+
+  /* CONTROLS */
+  .controls{display:flex;flex-direction:column;gap:8px}
+  .inputRow{display:flex;gap:10px}
+  .inputCh{flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:#0a0a0b;color:#fff}
+  .btn{background:var(--accent);color:#021;border:none;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+  .mini{padding:8px 10px;font-size:0.9rem}
+
+  /* LAYERS AREA */
+  .stage{padding:22px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border:1px solid rgba(255,255,255,0.02);min-height:70vh;position:relative;overflow:hidden}
+  .layers{display:flex;flex-direction:column;gap:12px;max-width:680px}
+  .card{padding:14px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:6px;transform:translateX(-20px);opacity:0}
+  .card.show{transform:translateX(0);opacity:1;transition:all .45s cubic-bezier(.2,.9,.3,1)}
+  .cardTitle{font-weight:700;color:var(--accent);font-size:0.96rem}
+  .cardData{font-family:Consolas,monospace;background:rgba(255,255,255,0.01);padding:8px;border-radius:8px;font-size:0.92rem;color:#cfe}
+
+  /* FLOW LINE */
+  .flowSvg{position:absolute;right:24px;top:20px;width:220px;height:calc(100% - 40px);pointer-events:none}
+  .packet{display:none;}
+
+  /* FOOTER */
+  .meta{display:flex;gap:10px;align-items:center}
+  .hint{color:#8fa}
+
+  /* RESPONSIVE */
+  @media (max-width:920px){.app{grid-template-columns:1fr;}.flowSvg{display:none}}
+
+  /* LOADING ANIMATION */
+  .loadingAnim{position:absolute;left:720px;top:50%;transform:translateY(-50%);width:60px;height:60px;border:6px solid rgba(255,255,255,0.12);border-top-color:var(--accent);border-radius:50%;animation:spin 0.9s linear infinite;opacity:0;z-index:5;transition:all 0.4s ease;}
+  .loadingAnim.active{opacity:0.8;}
+  @keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Mini Internet Simulator</h1>
+        <div class="sub">Encapsulation • Decapsulation • Animated packet journey</div>
+      </div>
+      <div class="meta">
+        <div class="hint"></div>
+        <button class="btn mini" id="downloadBtn">Download Report</button>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h2>Controls</h2>
+      <div class="controls">
+        <div class="inputRow">
+          <input id="msgInput" class="inputCh" placeholder="Type message (eg: Hello world)" />
+          <button id="sendBtn" class="btn">Simulate</button>
+        </div>
+        <div class="toggleRow">
+          <div style="flex:1">
+            <div style="font-size:0.85rem;color:#bfe;margin-bottom:6px">Mode</div>
+            <div class="toggle">
+              <div id="modeSwitch" class="switch on" onclick="toggleMode()">
+                <div class="thumb"></div>
+              </div>
+            </div>
+          </div>
+          <div style="width:120px;text-align:right;font-size:0.9rem;color:#cde">Encapsulation</div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button class="btn mini" onclick="stepForward()">Step →</button>
+          <button class="btn mini" onclick="autoPlay()">Auto Play</button>
+          <button class="btn mini" onclick="resetSim()">Reset</button>
+        </div>
+
+        <h2 style="margin-top:12px">OSI Quick Notes</h2>
+        <div class="explain" id="explainBox">
+          <b>Application (7):</b> The user-facing data (HTTP, FTP, SMTP).<br><br>
+          <b>Presentation (6):</b> Encoding & encryption — translates data to network-friendly form (eg. UTF-8, Base64).<br><br>
+          <b>Session (5):</b> Manages sessions, start/stop, control dialogues.<br><br>
+          <b>Transport (4):</b> Segmentation, ports, reliability (TCP/UDP).<br><br>
+          <b>Network (3):</b> Routing & IP addresses — packet creation.<br><br>
+          <b>Data Link (2):</b> Frames & MAC addressing (LAN level).<br><br>
+          <b>Physical (1):</b> Bits on the wire — electrical/optical signalling.
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- STAGE -->
+    <main class="stage" id="stage">
+      <!-- Animated path (packet will travel along this) -->
+      <svg class="flowSvg" viewBox="0 0 240 800" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop offset="0" stop-color="#1ce783" stop-opacity="0.8"/>
+            <stop offset="1" stop-color="#1ce783" stop-opacity="0.2"/>
+          </linearGradient>
+        </defs>
+        <path id="traj" d="M120 40 C80 80,80 160,120 200 C160 240,160 320,120 360 C80 400,80 480,120 520 C160 560,160 640,120 680" stroke="url(#g1)" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="6 8"/>
+      </svg>
+
+      <div class="loadingAnim" id="loadingAnim"></div>
+      <div class="layers" id="layers">
+        <!-- cards injected here -->
+      </div>
+
+      <div id="packet" class="packet" style="left:120px;top:40px"></div>
+      
+  
+</main>
+  </div>
+
+<script>
+// ----- State -----
+const layersInfo = [
+  ['Application Layer', (m)=>m],
+  ['Presentation Layer', (m)=>m.split('').map(c=>c.charCodeAt(0).toString(16)).join(' ')],
+  ['Session Layer', ()=> 'Session Established'],
+  ['Transport Layer', ()=> 'Segment → Src Port: 5000 | Dest Port: 80'],
+  ['Network Layer', ()=> 'Packet → Src IP: 192.168.1.2 | Dest IP: 142.250.183.78'],
+  ['Data Link Layer', ()=> 'Frame → Src MAC: AA:BB:CC:DD:EE:FF | Dest MAC: 11:22:33:44:55:66'],
+  ['Physical Layer', (m)=>m.split('').map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join(' ')]
+];
+let currentStep = -1;
+let modeEncap = true; // true = encapsulation, false = decapsulation
+let autoTimer = null;
+
+// ----- UI refs -----
+const layersEl = document.getElementById('layers');
+const packetEl = document.getElementById('packet');
+const loadingAnim = document.getElementById('loadingAnim');
+const modeSwitch = document.getElementById('modeSwitch');
+const msgInput = document.getElementById('msgInput');
+
+// ----- Build blank cards -----
+function buildCards(){
+  layersEl.innerHTML='';
+  layersInfo.forEach((l,i)=>{
+    const c = document.createElement('div');
+    c.className='card';
+    c.id = 'card-'+i;
+    c.innerHTML = `<div class='cardTitle'>${l[0]}</div><div class='cardData' id='data-${i}'>waiting...</div>`;
+    layersEl.appendChild(c);
+  });
+}
+buildCards();
+
+// ----- Simulation logic -----
+function simulate(){
+  resetSim();
+  const msg = msgInput.value.trim();
+  if(!msg){alert('type a message bro');return}
+  // precompute data
+  for(let i=0;i<layersInfo.length;i++){
+    const f = layersInfo[i][1];
+    const val = (typeof f==='function')? f(msg) : f;
+    document.getElementById('data-'+i).textContent = val;
+  }
+  // if decapsulation show reverse order
+  currentStep = modeEncap?0:layersInfo.length-1;
+  showStep(currentStep);
+}
+
+function showStep(step){
+  // clear all
+  for(let i=0;i<layersInfo.length;i++){
+    const el = document.getElementById('card-'+i);
+    el.classList.remove('show');
+  }
+  // animate packet along SVG path to target point
+  const path = document.getElementById('traj');
+  const len = path.getTotalLength();
+  // map step to t along path
+  const t = (modeEncap) ? step/(layersInfo.length-1) : (step/(layersInfo.length-1));
+  const pos = path.getPointAtLength(len * t);
+  packetEl.style.left = (pos.x+10)+'px';
+  packetEl.style.top = (pos.y+10)+'px';
+
+  // show card with nice delay
+  const card = document.getElementById('card-'+step);
+  setTimeout(()=>card.classList.add('show'), 80);
+  
+  // Check if we're on the last card
+  const isLastCard = (modeEncap && step === layersInfo.length-1) || (!modeEncap && step === 0);
+  
+  if(isLastCard){
+    // Hide animation on last card
+    loadingAnim.classList.remove('active');
+  } else {
+    // Update loading animation position based on card
+    setTimeout(()=>{
+      const cardRect = card.getBoundingClientRect();
+      const stageRect = document.getElementById('stage').getBoundingClientRect();
+      const relativeTop = cardRect.top - stageRect.top + (cardRect.height / 2);
+      loadingAnim.style.top = relativeTop + 'px';
+      loadingAnim.classList.add('active');
+    }, 100);
+  }
+}
+
+function stepForward(){
+  if(currentStep===-1){simulate();return}
+  if(modeEncap){
+    if(currentStep < layersInfo.length-1){ currentStep++; showStep(currentStep); }
+  } else {
+    if(currentStep > 0){ currentStep--; showStep(currentStep); }
+  }
+}
+
+function resetSim(){
+  clearInterval(autoTimer);
+  autoTimer=null;
+  currentStep=-1;
+  loadingAnim.classList.remove('active');
+  buildCards();
+  // reset packet
+  const start = document.getElementById('traj').getPointAtLength(0);
+  packetEl.style.left=(start.x+10)+'px'; packetEl.style.top=(start.y+10)+'px';
+}
+
+function autoPlay(){
+  if(autoTimer){clearInterval(autoTimer);autoTimer=null;return}
+  if(currentStep===-1) simulate();
+  autoTimer = setInterval(()=>{
+    const done = (modeEncap) ? currentStep >= layersInfo.length-1 : currentStep <= 0;
+    if(done){clearInterval(autoTimer);autoTimer=null;return}
+    stepForward();
+  }, 900);
+}
+
+function toggleMode(){
+  modeEncap = !modeEncap;
+  modeSwitch.classList.toggle('on', modeEncap);
+  modeSwitch.classList.toggle('off', !modeEncap);
+  // update label text
+  document.querySelector('.toggleRow div:last-child').textContent = modeEncap? 'Encapsulation' : 'Decapsulation';
+  resetSim();
+}
+
+// ----- helper: make a nice animated autopulse on packet -----
+setInterval(()=>{
+  packetEl.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:1200,iterations:1});
+},1600);
+
+// ----- Download Report (comprehensive PDF export) -----
+async function downloadReport(){
+  if(!window.jspdf){
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+  }
+  
+  const msg = msgInput.value.trim() || 'No message simulated';
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({orientation:'portrait', unit:'pt', format:'a4'});
+  const w = pdf.internal.pageSize.getWidth();
+  let yPos = 40;
+  
+  // Title
+  pdf.setFontSize(22); 
+  pdf.setTextColor(28,231,131); 
+  pdf.text('Mini Internet Simulator — Report', 40, yPos);
+  yPos += 30;
+  
+  // Metadata
+  pdf.setFontSize(10);
+  pdf.setTextColor(150,150,150);
+  pdf.text(`Generated: ${new Date().toLocaleString()}`, 40, yPos);
+  yPos += 15;
+  pdf.text(`Mode: ${modeEncap ? 'Encapsulation' : 'Decapsulation'}`, 40, yPos);
+  yPos += 25;
+  
+  // Original Message
+  pdf.setFontSize(14);
+  pdf.setTextColor(100,100,100);
+  pdf.text('Original Message:', 40, yPos);
+  yPos += 20;
+  pdf.setFontSize(12);
+  pdf.setTextColor(50,50,50);
+  pdf.text(msg, 60, yPos);
+  yPos += 30;
+  
+  // Layer Information
+  pdf.setFontSize(16);
+  pdf.setTextColor(28,231,131);
+  pdf.text('OSI Layers Breakdown', 40, yPos);
+  yPos += 25;
+  
+  // Process each layer
+  for(let i=0;i<layersInfo.length;i++){
+    const layerIndex = modeEncap ? i : layersInfo.length - 1 - i;
+    const [layerName, fn] = layersInfo[layerIndex];
+    const layerData = (typeof fn === 'function') ? fn(msg) : fn;
+    
+    // Check if we need a new page
+    if(yPos > 750){
+      pdf.addPage();
+      yPos = 40;
+    }
+    
+    // Layer title
+    pdf.setFontSize(12);
+    pdf.setTextColor(28,231,131);
+    pdf.text(`${i+1}. ${layerName}`, 40, yPos);
+    yPos += 18;
+    
+    // Layer data with text wrapping
+    pdf.setFontSize(10);
+    pdf.setTextColor(80,80,80);
+    pdf.setFont(undefined, 'normal');
+    const lines = pdf.splitTextToSize(layerData, w - 120);
+    pdf.text(lines, 60, yPos);
+    yPos += (lines.length * 14) + 15;
+  }
+  
+  // Footer
+  yPos += 20;
+  if(yPos > 750){
+    pdf.addPage();
+    yPos = 40;
+  }
+  pdf.setFontSize(9);
+  pdf.setTextColor(150,150,150);
+  pdf.text('Made for college flex — Chetu mode', 40, yPos);
+  
+  pdf.save('mini_inet_report.pdf');
+}
+
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+
+// ----- init bindings -----
+document.getElementById('sendBtn').addEventListener('click', simulate);
+document.getElementById('downloadBtn').addEventListener('click', async ()=>{document.getElementById('downloadBtn').textContent='Generating...';await downloadReport();document.getElementById('downloadBtn').textContent='Download Report'});
+// start position
+resetSim();
+
+// keyboard: Enter to simulate
+msgInput.addEventListener('keydown', (e)=>{if(e.key==='Enter') simulate();});
+
+</script>
+
+</body>
+</html>
